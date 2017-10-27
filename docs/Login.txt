@@ -1,0 +1,11 @@
+- controllo presenza cookie _session_id
+    |---> se presente controllo che l'utente sia loggato su example.it tramite il webservice (richiesta XHR)
+    |           |---> se è loggato il webservice risponde con l'url per l'accesso su ChilliSpot
+    |           |           |---> viene inviata la richiesta (XHR) a ChilliSpot
+    |           |           |           |---> se l'accesso va a buon fine viene effettuato il redirect (window.location.replace("https://example.it/site/index.html#!/dashboard");)
+    |           |           |           |---> se l'accesso non va a buon fine viene mostrato il form di login
+    |           |           |           |---> se il dispositivo è già loggato su ChilliSpot, l'utente viene reindirizzato sulla pagina che stava visitando (caricamento pagine in background)
+    |           |---> se non è loggato il webservice risponde con un 401 Unauthorized e viene mostrato il form di login
+    |           |           |---> il form di login con le credenziali viene inviato al webservice
+    |           |           |           |---> se l'accesso va a buon fine, il webservice risponde con l'url per l'accesso su ChilliSpot
+    |---> se non è presente viene mostrato il form di login

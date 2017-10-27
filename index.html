@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    
+    <title>SocialWifi - example</title>
+    
+    <script type="text/javascript" src="scripts/socialwifi.js"></script>
+  </head>
+  <body>
+    <h1>SocialWifi example.it</h1>
+    <div id="bloccoStato">
+    </div>
+    <div id="bloccoFormLogin" style="display:none">
+      <form id="formLogin" onsubmit="inviaFormLogin(this); return false;">
+        Username: <input type="text" name="txtUsername" required="required" /><br />
+        Password: <input type="password" name="pwdPassword" required="required" /><br />
+        <input type="submit" value="Login" />
+      </form>
+    </div>
+  </body>
+</html>

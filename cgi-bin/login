@@ -1,0 +1,44 @@
+#!/usr/bin/python
+import cgi
+import httplib
+import json
+import hashlib
+import struct
+import urllib
+
+print "Content-Type: text/html"
+print
+
+# Dati inseriti dall'utente
+form = cgi.FieldStorage()
+username = form.getvalue("txtUsername")
+password = form.getvalue("pwdPassword")
+
+# Dati per comporre l'URL di ChilliSpot
+uamip = form.getvalue("uamip")
+uamport = form.getvalue("uamport")
+userurl = form.getvalue("userurl")
+challenge = form.getvalue("challenge")
+
+uamsecret = "stringa-random"
+
+# Dati trasformati in JSON
+datiJson = json.dumps({'user': {'email': username, 'password': password}})
+
+# Richiesta alle API
+connessioneApi = httplib.HTTPSConnection("example.it")
+connessioneApi.request("POST", "/users/sign_in.json", datiJson, {"Content-type": "application/json;charset=UTF-8"})
+risposta = connessioneApi.getresponse()
+
+if (risposta.status == 200):
+  hexchallenge = struct.pack('16B', *[int(c, 16) for c in (challenge[i:i+2] for i in xrange(0, len(challenge), 2))])
+  
+  newchallenge = hashlib.md5(hexchallenge + uamsecret).hexdigest().decode('hex')
+  
+  response = hashlib.md5('\0%s%s' % ("bravo", newchallenge)).hexdigest()
+  
+  # Credenziali per permettere al dispositivo di effettuare l'accesso su example.it senza rimostrare il form di login
+  credenzialiExampleEscaped = urllib.quote(json.dumps({'user': {'email': username, 'password': password}}))
+  
+  # Le credenziali vengono "inserite" nel parametro della querystring userurl che dovrebbe essere utilizzato per reindirizzare l'utente sulla pagina che voleva visitare
+  print "http://" + uamip + ":" + uamport + "/" + "logon?username=usernameChillispot" + "&response=" + response + "&userurl=" + credenzialiExampleEscaped
