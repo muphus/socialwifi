@@ -7,14 +7,6 @@ var userurl = "";
 // Challenge per criptare la password dell'utente di ChilliSpot
 var challenge = "";
 
-/* La pagina viene caricata dopo che il dispositivo viene reindirizzato dal demone
- * di ChilliSpot. La pagina sulla quale viene reindirizzato il dispositivo è sempre
- * la stessa indipendentemente dal tipo di reindirizzamento (login fallito, login
- * non ancora effettuato, ecc), ma viene aggiunto da ChilliSpot un parametro nella
- * query string dell'url di redirect che ci fa capire lo "stato" in cui si trova il
- * dispositivo. Quindi per prima cosa bisogna fare il parsing della query string
- * per costruire la pagina da mostrare all'utente.
- */
 window.onload = function()
 {
   parseRichiesta(location.search);
@@ -31,7 +23,7 @@ function parseRichiesta(querystring)
   userurl = getParameterByName("userurl", querystring);
   // Challenge per criptare la password dell'utente di ChilliSpot
   challenge = getParameterByName("challenge", querystring);
-  
+
   // Se non sono presenti nè il tipo di redirect, nè IP e porta di ChilliSpot,
   //  la richiesta non è valida
   if (res === "" || uamip === "" || uamport === "") {
@@ -74,7 +66,7 @@ function parseRichiesta(querystring)
           }
         }
       }
-      
+
       richiestaWebservice.open("GET", "http://socialwifi.example.it/cgi-bin/controllo_sessione");
       richiestaWebservice.send();
     } else {
@@ -103,7 +95,7 @@ function parseRichiesta(querystring)
     // all'utente di tornare sulla pagina che stava visitando)
     // e memorizzazione del cookie per sapere se è stata già mostrata la pagina personale
     // su example.it nel giorno in cui si sta collegando l'utente
-    
+
     // Login dell'utente su example.it con le credenziali inserite, o con il token di Facebook
     // Le credenziali o il token di Facebook vengono inseriti nel parametro della querystring
     // userurl (inutilizzato perché una volta fatto il login l'utente deve essere reindirizzato
@@ -114,19 +106,19 @@ function parseRichiesta(querystring)
       // Viene inviata una richiesta XHR (che preveda la memorizzazione dei cookie)
       //    alle API di autenticazione di example
       var richiestaApi = new XMLHttpRequest();
-  
+
       // Opzione per accettare i cookie
       richiestaApi.withCredentials = true;
-      
+
       // TODO: redirect una volta ricevuta la risposta
-      
+
       richiestaApi.open("POST", "https://example.it/users/sign_in.json")
       richiestaApi.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       richiestaApi.send(JSON.stringify(credenziali));
     } else if (credenziali.hasOwnProperty('fbToken')) {
       // Login con fb
     }
-    
+
     docCookies.setItem("dashboardMostrata", "1", "86400", "/");
     window.location.href = "https://example.it/site/index.html#!/dashboard";
   } else if (res == "failed") {
@@ -145,7 +137,7 @@ function parseRichiesta(querystring)
 function nascondiStato()
 {
   bloccoStato = document.getElementById("bloccoStato");
-  
+
   for (i=0; i < bloccoStato.childNodes.length; i++) {
     bloccoStato.removeChild(bloccoStato.childNodes[0]);
   }
@@ -157,9 +149,9 @@ function mostraStato(stato)
   bloccoStato = document.getElementById("bloccoStato");
   p = document.createElement("p");
   p.appendChild(document.createTextNode(stato));
-  
+
   nascondiStato();
-  
+
   bloccoStato.appendChild(p);
 }
 
@@ -189,22 +181,22 @@ function inviaFormLogin(formLogin)
   // poiché i cookie vengono impostati anche con le richieste XHR.
   // Allo stesso modo per l'autenticazione con Facebook è possibile inviare il token
   // a example.it con una richiesta XHR
-  
+
   // Form convertito in un oggetto FormData per un invio più bello, orah.
   var formData = new FormData(formLogin);
-  
+
   // Dati di ChilliSpot aggiunti al form
   formData.append("uamip", uamip);
   formData.append("uamport", uamport);
   formData.append("challenge", challenge);
-  
+
   var richiestaWebservice = new XMLHttpRequest();
   richiestaWebservice.onreadystatechange = function() {
     if (richiestaWebservice.readyState === 4) {
       if (richiestaWebservice.status === 200) {
         // 200 OK dal web service --> il web service ha risposto con l'URL
         // per l'accesso su ChilliSpot
-        
+
         // Redirect su ChilliSpot con l'URL prodotto dal webservice
         window.location.href = richiestaWebservice.responseText;
       } else if (richiestaWebservice.status === 401) {
@@ -214,7 +206,7 @@ function inviaFormLogin(formLogin)
       }
     }
   }
-  
+
   richiestaWebservice.open("POST", "http://socialwifi.example.it/cgi-bin/login");
   richiestaWebservice.send(formData);
 }
